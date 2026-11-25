@@ -78,10 +78,19 @@ async function fetchCentralSubs() {
   }
 }
 
+let _sse = null;
 function startListener() {
   clearTimeout(_retryTimer);
+  clearInterval(_retryTimer);
   fetchCentralSubs();
-  _retryTimer = setInterval(fetchCentralSubs, 5000);
+  if (_sse) { try { _sse.close(); } catch {} _sse = null; }
+  try {
+    const sseUrl = `${CENTRAL_CONFIG.baseUrl}/api/v1/data/stream/events?projectId=${encodeURIComponent(CENTRAL_CONFIG.projectId)}&apiKey=${encodeURIComponent(CENTRAL_CONFIG.apiKey)}`;
+    _sse = new EventSource(sseUrl);
+    _sse.addEventListener('data_changed', () => fetchCentralSubs());
+    _sse.onerror = () => { /* auto-reconnects; fallback poll handles offline */ };
+  } catch (e) { console.warn('[SSE]', e.message); }
+  _retryTimer = setInterval(fetchCentralSubs, 30000);
 }
 
 var TELEGRAM_CONFIG = {
