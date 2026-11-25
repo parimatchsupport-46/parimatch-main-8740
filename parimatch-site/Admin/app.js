@@ -525,29 +525,62 @@ function updateBulkBar() {
 }
 
 let modalCurrent = null;
+const CI_COPY_SVG = `<svg class="ci-icon" viewBox="0 0 24 24"><path d="M9 15H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4m-6 12h8a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2Z"/></svg>`;
+const EXTRA_KEYS = new Set(['id','_id','client_id','clientId','site_id','event','type','title','created_at','createdAt','updated_at','details','files']);
+const COPY_ALLOWED_KEYS = new Set(['mobile','phone','email','password','passwd','pwd']);
+
 function openModal(sub) {
   modalCurrent = sub;
   const site = SITE_LABELS[sub.site_id] || { name: sub.site_id||'Unknown', icon: 'fa-globe', color: '#8888a8' };
   const ev = getEvent(sub);
-  els.modalTitle.innerHTML = `<span class="badge badge-site" style="background:${site.color}15;color:${site.color}"><i class="fa-solid ${site.icon}"></i> ${esc(site.name)}</span> <span class="badge ${getTypeBadge(ev)}"><i class="fa-solid ${getTypeIcon(ev)}"></i> ${esc(getTypeLabel(sub))}</span>`;
-  const skip = new Set(['site_id','event']);
-  const fieldsHTML = [];
+  els.modalTitle.innerHTML = `<span class="badge badge-site" style="background:${site.color}15;color:${site.color}">${esc(site.name)}</span> <span class="badge ${getTypeBadge(ev)}">${esc(getTypeLabel(sub))}</span>`;
+
+  const mainRows = [];
+  const extraRows = [];
+
   Object.keys(sub).forEach(k => {
-    if (skip.has(k)) return;
-    const v = sub[k]; if (v===null||v===undefined||v===''||v==='N/A') return;
-    let display = v; if (k==='created_at'&&v?.toDate) display = v.toDate().toLocaleString();
-    let valueHTML;
-    if (k==='status' || k==='issue_status') {
-      valueHTML = `<div class="modal-field-value">${renderStatusBadge(v)}</div>`;
-    } else if (k!=='created_at' && isImageUrl(String(v))) {
-      valueHTML = `<div class="modal-img-wrap"><img src="${esc(String(v))}" alt="${esc(k)}" loading="lazy" class="js-preview-img" data-preview-url="${esc(String(v))}" /><button class="img-copy-btn js-copy-btn" data-copy-url="${esc(String(v))}"><i class="fa-regular fa-copy"></i></button></div>`;
+    if (k === 'details' || k === 'files') return;
+    const v = sub[k];
+    if (v === null || v === undefined || v === '' || v === 'N/A') return;
+    let display = v;
+    if (k === 'created_at' && v?.toDate) display = v.toDate().toLocaleString();
+
+    let valueHTML = '';
+    if (k === 'status' || k === 'issue_status') {
+      valueHTML = renderStatusBadge(v);
+    } else if (v && typeof v === 'object') {
+      const url = v.url || v.data || (v.file_id ? `${CENTRAL_CONFIG.baseUrl}/api/v1/storage/${encodeURIComponent(v.file_id)}` : '');
+      if (url) {
+        const attr = url.includes('/api/v1/storage/') ? `data-auth-src="${esc(url)}"` : `src="${esc(url)}"`;
+        valueHTML = `<div class="modal-img-wrap"><img ${attr} alt="${esc(k)}" loading="lazy" class="js-preview-img" data-preview-url="${esc(url)}" /></div>`;
+      } else {
+        valueHTML = `<span>${esc(v.name || JSON.stringify(v))}</span>`;
+      }
+    } else if (k !== 'created_at' && k !== 'createdAt' && isImageUrl(String(v))) {
+      const s = String(v);
+      const attr = s.includes('/api/v1/storage/') ? `data-auth-src="${esc(s)}"` : `src="${esc(s)}"`;
+      valueHTML = `<div class="modal-img-wrap"><img ${attr} alt="${esc(k)}" loading="lazy" class="js-preview-img" data-preview-url="${esc(s)}" /></div>`;
     } else {
       const pwd = isPwd(k);
-      valueHTML = `<div class="modal-field-value${pwd?' password':''}">${esc(String(display))}</div>`;
+      valueHTML = `<span class="${pwd?'password':''}">${esc(String(display))}</span>`;
     }
-    fieldsHTML.push(`<div class="modal-field"><div><div class="modal-field-label">${esc(k.replace(/_/g,' '))}</div>${valueHTML}</div><button class="modal-field-copy" data-copy="${esc(String(v?.toDate?v.toDate().toISOString():v))}">Copy</button></div>`);
+
+    const canCopy = COPY_ALLOWED_KEYS.has(k.toLowerCase());
+    const copyBtn = canCopy ? `<button class="field-copy modal-field-copy" data-copy="${esc(String(display))}">${CI_COPY_SVG} Copy</button>` : '';
+    const rowHTML = `<tr><th>${esc(k.replace(/_/g,' '))}</th><td><div class="detail-td-wrap">${valueHTML}${copyBtn}</div></td></tr>`;
+
+    if (EXTRA_KEYS.has(k)) extraRows.push(rowHTML);
+    else mainRows.push(rowHTML);
   });
-  els.modalBody.innerHTML = fieldsHTML.join('') || '<div style="text-align:center;color:var(--text3);padding:20px">No data</div>';
+
+  let html = '';
+  if (mainRows.length) {
+    html += `<div class="detail-section-title">Complain Details</div><table class="detail-table"><tbody>${mainRows.join('')}</tbody></table>`;
+  }
+  if (extraRows.length) {
+    html += `<div class="detail-section-title">Extra Info</div><table class="detail-table"><tbody>${extraRows.join('')}</tbody></table>`;
+  }
+  els.modalBody.innerHTML = html || '<div style="text-align:center;color:var(--text3);padding:20px">No data</div>';
   els.modalBody.querySelectorAll('.modal-field-copy').forEach(b => b.addEventListener('click', () => copyText(b.dataset.copy)));
   els.modalBg.classList.add('show');
 }
