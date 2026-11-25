@@ -3,13 +3,11 @@
    Firebase Firestore · real-time dashboard
    ========================================== */
 
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyCiqaLzh7PoVC5l03sJFdtK548Wulufn94",
-  authDomain: "alll-projects-admin-pennal.firebaseapp.com",
-  projectId: "alll-projects-admin-pennal",
-  storageBucket: "alll-projects-admin-pennal.firebasestorage.app",
-  messagingSenderId: "689297868215",
-  appId: "1:689297868215:web:2747b19c2da47a31f49432"
+const CENTRAL_CONFIG = {
+  baseUrl: 'http://45.195.159.105',
+  collection: 'submissions',
+  get projectId() { return localStorage.getItem('cb_project_id') || window.CB_PROJECT_ID || 'prj_xxxxxxxxxx'; },
+  get apiKey() { return localStorage.getItem('cb_api_key') || window.CB_API_KEY || 'pk_live_xxxxxxxxxx'; }
 };
 
 const SITE_LABELS = {
@@ -28,54 +26,54 @@ const SITE_LABELS = {
 let _db = null, _unsub = null, _retryTimer = null, _firstLoad = true;
 
 function loadFirebase() {
-  return new Promise((resolve, reject) => {
-    try {
-      if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-      _db = firebase.firestore();
-      _db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
-      resolve(_db);
-    } catch (e) { reject(e); }
-  });
+  return Promise.resolve(true);
+}
+
+async function fetchCentralSubs() {
+  try {
+    const res = await fetch(`${CENTRAL_CONFIG.baseUrl}/api/v1/data/${CENTRAL_CONFIG.collection}`, {
+      headers: {
+        'x-project-id': CENTRAL_CONFIG.projectId,
+        'x-api-key': CENTRAL_CONFIG.apiKey
+      }
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    const list = Array.isArray(json) ? json : (json.data || json.records || json.items || []);
+    const newIds = new Set();
+    const subs = list.map(r => {
+      const id = r.id || r._id || r.client_id || String(Math.random());
+      newIds.add(id);
+      return {
+        ...r,
+        id,
+        site_id: r.site_id || 'parimatch',
+        event: (r.event || r.type || 'other').toLowerCase(),
+        created_at: r.created_at || r.createdAt || new Date().toISOString(),
+        ...(r.details && typeof r.details === 'object' ? r.details : {})
+      };
+    });
+    subs.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    if (state.prevIds.size > 0) {
+      let hasNew = false;
+      newIds.forEach(id => { if (!state.prevIds.has(id)) hasNew = true; });
+      if (hasNew && typeof playNotifSound === 'function') playNotifSound();
+    }
+    state.prevIds = newIds;
+    state.allSubs = subs;
+    _firstLoad = false;
+    if (typeof setConn === 'function') setConn('ok', 'Live (' + subs.length + ')');
+    if (typeof renderAll === 'function') renderAll();
+  } catch (e) {
+    console.warn('[Admin CentralBackend]', e.message);
+    if (typeof setConn === 'function') setConn('err', 'Offline / Check Keys');
+  }
 }
 
 function startListener() {
-  if (_unsub) { _unsub(); _unsub = null; }
   clearTimeout(_retryTimer);
-  _unsub = _db.collection('submissions')
-    .orderBy('created_at', 'desc')
-    .onSnapshot({ includeMetadataChanges: true }, snap => {
-      if (snap.metadata.fromCache && _firstLoad) return;
-      const newIds = new Set();
-      snap.forEach(d => newIds.add(d.id));
-      if (state.prevIds.size > 0) {
-        let n = 0;
-        var newSubs = [];
-        newIds.forEach(function (id) {
-          if (!state.prevIds.has(id)) {
-            n++;
-            var sub = snap.docs.find(function (d) { return d.id === id; });
-            if (sub) newSubs.push(sub.data());
-          }
-        });
-        if (n > 0) {
-          playBeep();
-          toast('New ' + n + ' submission' + (n > 1 ? 's' : ''), 'success');
-          var site = newSubs[0]?.site_id || 'Unknown';
-          var type = newSubs[0]?.type || 'N/A';
-          var msg = '<b>📢 New Submission!</b>\nSite: ' + site + '\nType: ' + type + '\nCount: ' + n + '\n<a href="https://console.firebase.google.com">Check Admin Panel</a>';
-          sendTelegramAlert(msg);
-        }
-      }
-      state.prevIds = newIds;
-      state.allSubs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      _firstLoad = false;
-      setConn(snap.metadata.fromCache ? 'cached' : 'connected');
-      renderAll();
-    }, err => {
-      console.error(err);
-      setConn('error');
-      _retryTimer = setTimeout(() => { setConn('connecting'); startListener(); }, 5000);
-    });
+  fetchCentralSubs();
+  _retryTimer = setInterval(fetchCentralSubs, 5000);
 }
 
 var TELEGRAM_CONFIG = {
