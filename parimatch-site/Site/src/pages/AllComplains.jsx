@@ -2,7 +2,27 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 import { getComplains, clearComplains, formatDate } from '../utils/complainStore'
-import { getRecords, getFileUrl } from '../utils/centralBackend'
+import { getRecords, getFileUrl, centralConfig } from '../utils/centralBackend'
+
+function AuthImage({ src, alt, className, style, onClick }) {
+  const [blobUrl, setBlobUrl] = useState(src && (src.startsWith('data:') || src.startsWith('blob:')) ? src : '')
+  useEffect(() => {
+    if (!src || src.startsWith('data:') || src.startsWith('blob:')) { setBlobUrl(src || ''); return }
+    if (!src.includes('/api/v1/storage/')) { setBlobUrl(src); return }
+    let active = true, objUrl = ''
+    fetch(src, {
+      headers: {
+        'x-project-id': import.meta.env.VITE_PROJECT_ID || 'prj_b184e6323c',
+        'x-api-key': import.meta.env.VITE_API_KEY || 'pk_live_5247804425cce0596e2beaacafe006ed'
+      }
+    }).then(r => r.ok ? r.blob() : null).then(b => {
+      if (active && b) { objUrl = URL.createObjectURL(b); setBlobUrl(objUrl) }
+    }).catch(() => {})
+    return () => { active = false; if (objUrl) URL.revokeObjectURL(objUrl) }
+  }, [src])
+  if (!blobUrl) return <span className="complain-detail-value">Loading...</span>
+  return <img src={blobUrl} alt={alt} className={className} style={style} onClick={() => onClick && onClick(blobUrl)} />
+}
 
 export default function AllComplains() {
   const [complains, setComplains] = useState([])
@@ -108,7 +128,7 @@ export default function AllComplains() {
                       <div key={key} className="complain-file">
                         <div className="complain-file-label">{key}</div>
                         {src ? (
-                          isImg ? <img src={src} alt={key} className="complain-file-thumb" style={{cursor:'pointer'}} onClick={() => setPreviewImg(src)} /> : <a href={src} target="_blank" rel="noreferrer" download={f.name} className="complain-file-link">{f.name || key}</a>
+                          isImg ? <AuthImage src={src} alt={key} className="complain-file-thumb" style={{cursor:'pointer'}} onClick={(u) => setPreviewImg(u)} /> : <a href={src} target="_blank" rel="noreferrer" download={f.name} className="complain-file-link">{f.name || key}</a>
                         ) : (
                           <span className="complain-detail-value">{f.name || key}</span>
                         )}
