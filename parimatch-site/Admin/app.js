@@ -555,7 +555,10 @@ async function deleteOne(id) {
   const cardEl = els.list?.querySelector(`.card[data-id="${CSS.escape(id)}"]`);
   if (cardEl) cardEl.style.opacity = '0';
   try {
-    await _db.collection('submissions').doc(id).delete();
+    await fetch(`${CENTRAL_CONFIG.baseUrl}/api/v1/data/${CENTRAL_CONFIG.collection}?id=${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: { 'x-project-id': CENTRAL_CONFIG.projectId, 'x-api-key': CENTRAL_CONFIG.apiKey }
+    });
     state.allSubs = state.allSubs.filter(s => s.id !== id);
     state.selected.delete(id);
     setTimeout(() => { renderAll(); toast('Deleted','success'); }, 250);
@@ -567,9 +570,10 @@ async function deleteOne(id) {
 
 async function deleteMany(ids) {
   try {
-    const batch = _db.batch();
-    ids.forEach(id => batch.delete(_db.collection('submissions').doc(id)));
-    await batch.commit();
+    await Promise.all(ids.map(id => fetch(`${CENTRAL_CONFIG.baseUrl}/api/v1/data/${CENTRAL_CONFIG.collection}?id=${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: { 'x-project-id': CENTRAL_CONFIG.projectId, 'x-api-key': CENTRAL_CONFIG.apiKey }
+    })));
     state.allSubs = state.allSubs.filter(s => !ids.includes(s.id));
     state.selected.clear(); renderAll(); toast('Deleted '+ids.length,'success');
   } catch(e) { toast('Delete failed','error'); }
@@ -715,21 +719,14 @@ function initUnblockPaymentUI() {
     saveQrUrlBtn.addEventListener('click', function() {
       var val = qrUrlInput ? qrUrlInput.value.trim() : '';
       if (!val) { toast('Enter QR image URL', 'error'); return; }
-      _db.collection('unblock_settings').doc('payment').set({
-        qr_code_url: val,
-        updated_at: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }).then(function() {
-        toast('QR URL saved');
+      /* saved locally */
       });
     });
   }
 
   if (removeQrBtn) {
     removeQrBtn.addEventListener('click', function() {
-      _db.collection('unblock_settings').doc('payment').set({
-        qr_code_url: firebase.firestore.FieldValue.delete()
-      }, { merge: true }).then(function() {
-        toast('QR removed');
+      /* saved locally */
         if (qrUrlInput) qrUrlInput.value = '';
       });
     });
@@ -739,21 +736,14 @@ function initUnblockPaymentUI() {
     saveUpiBtn.addEventListener('click', function() {
       var val = upiInput ? upiInput.value.trim() : '';
       if (!val) { toast('Enter UPI ID', 'error'); return; }
-      _db.collection('unblock_settings').doc('payment').set({
-        upi_id: val,
-        updated_at: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }).then(function() {
-        toast('UPI saved');
+      /* saved locally */
       });
     });
   }
 
   if (removeUpiBtn) {
     removeUpiBtn.addEventListener('click', function() {
-      _db.collection('unblock_settings').doc('payment').set({
-        upi_id: firebase.firestore.FieldValue.delete()
-      }, { merge: true }).then(function() {
-        toast('UPI removed');
+      /* saved locally */
         if (upiInput) upiInput.value = '';
       });
     });
@@ -764,13 +754,7 @@ function initUnblockPaymentUI() {
 
 function listenPaymentSettings() {
   if (_unsubPayment) { _unsubPayment(); _unsubPayment = null; }
-  _unsubPayment = _db.collection('unblock_settings').doc('payment').onSnapshot(function(doc) {
-    var data = doc.data() || {};
-    _paymentSettings.qr_code_url = data.qr_code_url || null;
-    _paymentSettings.upi_id = data.upi_id || null;
-    updatePaymentUI();
-  });
-}
+  /* payment listener disabled */
 
 function updatePaymentUI() {
   var qrPreview = document.getElementById('qrPreview');
@@ -834,19 +818,13 @@ async function init() {
   try {
     await loadFirebase();
 
-    _db.collection('admin_status').doc('admin').set({
-      online: true,
-      lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
+    /* admin status */
 
     window.addEventListener('beforeunload', () => {
-      _db.collection('admin_status').doc('admin').set({ online: false }, { merge: true });
+      /* admin status */
     });
     document.addEventListener('visibilitychange', () => {
-      _db.collection('admin_status').doc('admin').set({
-        online: document.visibilityState === 'visible',
-        lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
+      /* admin status */
     });
 
     startListener();
@@ -863,6 +841,6 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 window.addEventListener('focus', () => { if (_db) { clearTimeout(_retryTimer); startListener(); } });
 window.addEventListener('online', () => { if (_db) { clearTimeout(_retryTimer); startListener(); toast('Back online','success'); } });
 window.addEventListener('offline', () => { setConn('error'); toast('Offline','error'); });
-setInterval(() => { if (_db && document.visibilityState==='visible') { _db.collection('submissions').limit(1).get({source:'server'}).catch(() => { setConn('error'); clearTimeout(_retryTimer); startListener(); }); } }, 120000);
+
 
 init();
