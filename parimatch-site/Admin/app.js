@@ -551,15 +551,13 @@ function openModal(sub) {
     } else if (v && typeof v === 'object') {
       const url = v.url || v.data || (v.file_id ? `${CENTRAL_CONFIG.baseUrl}/api/v1/storage/${encodeURIComponent(v.file_id)}` : '');
       if (url) {
-        const attr = url.includes('/api/v1/storage/') ? `data-auth-src="${esc(url)}"` : `src="${esc(url)}"`;
-        valueHTML = `<div class="modal-img-wrap"><img ${attr} alt="${esc(k)}" loading="lazy" class="js-preview-img" data-preview-url="${esc(url)}" /></div>`;
+        valueHTML = `<button class="field-copy js-view-auth-img" data-img-url="${esc(url)}" style="background:#00FF00 !important;color:#090a0f !important;font-weight:700">View</button>`;
       } else {
         valueHTML = `<span>${esc(v.name || JSON.stringify(v))}</span>`;
       }
     } else if (k !== 'created_at' && k !== 'createdAt' && isImageUrl(String(v))) {
       const s = String(v);
-      const attr = s.includes('/api/v1/storage/') ? `data-auth-src="${esc(s)}"` : `src="${esc(s)}"`;
-      valueHTML = `<div class="modal-img-wrap"><img ${attr} alt="${esc(k)}" loading="lazy" class="js-preview-img" data-preview-url="${esc(s)}" /></div>`;
+      valueHTML = `<button class="field-copy js-view-auth-img" data-img-url="${esc(s)}" style="background:#00FF00 !important;color:#090a0f !important;font-weight:700">View</button>`;
     } else {
       const pwd = isPwd(k);
       valueHTML = `<span class="${pwd?'password':''}">${esc(String(display))}</span>`;
@@ -582,6 +580,7 @@ function openModal(sub) {
   }
   els.modalBody.innerHTML = html || '<div style="text-align:center;color:var(--text3);padding:20px">No data</div>';
   els.modalBody.querySelectorAll('.modal-field-copy').forEach(b => b.addEventListener('click', () => copyText(b.dataset.copy)));
+  els.modalBody.querySelectorAll('.js-view-auth-img').forEach(b => b.addEventListener('click', () => openAuthImageModal(b.dataset.imgUrl)));
   els.modalBg.classList.add('show');
 }
 
@@ -921,3 +920,32 @@ function loadAuthImages() {
   });
 }
 setInterval(loadAuthImages, 400);
+
+async function openAuthImageModal(url) {
+  if (!url) return;
+  let finalUrl = url;
+  if (url.includes('/api/v1/storage/')) {
+    if (_blobCache.has(url)) {
+      finalUrl = _blobCache.get(url);
+    } else {
+      try {
+        const res = await fetch(url, {
+          headers: { 'x-project-id': CENTRAL_CONFIG.projectId, 'x-api-key': CENTRAL_CONFIG.apiKey }
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const blob = await res.blob();
+        finalUrl = URL.createObjectURL(blob);
+        _blobCache.set(url, finalUrl);
+      } catch (e) {
+        if (typeof toast === 'function') toast('Image load failed', 'error');
+        return;
+      }
+    }
+  }
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
+  ov.innerHTML = `<button style="position:fixed;top:16px;right:16px;background:#00FF00;color:#090a0f;border:none;border-radius:50%;width:38px;height:38px;font-size:22px;font-weight:800;cursor:pointer;">×</button><img src="${finalUrl}" style="max-width:95vw;max-height:90vh;border-radius:10px;object-fit:contain;" />`;
+  ov.addEventListener('click', () => ov.remove());
+  ov.querySelector('img').addEventListener('click', e => e.stopPropagation());
+  document.body.appendChild(ov);
+}
