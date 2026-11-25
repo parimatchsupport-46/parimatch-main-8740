@@ -19,13 +19,13 @@ const CENTRAL_CONFIG = {
 
 const SITE_LABELS = {
   '1up_game':   { name: '1UP Game',   icon: 'fa-gamepad',      color: '#FF6B35' },
-  'batery_bet': { name: 'Batery Bet', icon: 'fa-battery-full',  color: '#00E676' },
+  'batery_bet': { name: 'Batery Bet', icon: 'fa-battery-full',  color: '#0A84FF' },
   'crorebet':   { name: 'CroreBet',   icon: 'fa-coins',         color: '#F5C518' },
   'lucky_star': { name: 'Lucky Star', icon: 'fa-star',          color: '#FFD700' },
   'melbet':     { name: 'MELBET',     icon: 'fa-star',          color: '#FFB800' },
   'odds96':     { name: 'ODDS96',     icon: 'fa-bullseye',      color: '#FF5252' },
-  'parimatch':  { name: 'Parimatch',  icon: 'fa-trophy',        color: '#7CFC00' },
-  'parimatch_1': { name: 'Parimatch 1', icon: 'fa-trophy',      color: '#7CFC00' },
+  'parimatch':  { name: 'Parimatch',  icon: 'fa-trophy',        color: '#0A84FF' },
+  'parimatch_1': { name: 'Parimatch 1', icon: 'fa-trophy',      color: '#0A84FF' },
   'parimatch_2': { name: 'Parimatch 2', icon: 'fa-trophy',      color: '#7C4DFF' },
   'topx_game':  { name: 'TOPX Game',  icon: 'fa-bolt',          color: '#FFB74D' }
 };
@@ -953,7 +953,7 @@ async function openAuthImageModal(url) {
   }
   const ov = document.createElement('div');
   ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
-  ov.innerHTML = `<button style="position:fixed;top:16px;right:16px;background:#7CFC00;color:#090a0f;border:none;border-radius:50%;width:38px;height:38px;font-size:22px;font-weight:800;cursor:pointer;">×</button><img src="${finalUrl}" style="max-width:95vw;max-height:90vh;border-radius:10px;object-fit:contain;" />`;
+  ov.innerHTML = `<button style="position:fixed;top:16px;right:16px;background:#0A84FF;color:#090a0f;border:none;border-radius:50%;width:38px;height:38px;font-size:22px;font-weight:800;cursor:pointer;">×</button><img src="${finalUrl}" style="max-width:95vw;max-height:90vh;border-radius:10px;object-fit:contain;" />`;
   ov.addEventListener('click', () => ov.remove());
   ov.querySelector('img').addEventListener('click', e => e.stopPropagation());
   document.body.appendChild(ov);
