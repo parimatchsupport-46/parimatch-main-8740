@@ -15,8 +15,16 @@
   },
   "rewrites": [
     {
+      "source": "/admin",
+      "destination": { "service": "admin" }
+    },
+    {
       "source": "/admin/(.*)",
       "destination": { "service": "admin" }
+    },
+    {
+      "source": "/blog",
+      "destination": { "service": "blog" }
     },
     {
       "source": "/blog/(.*)",
