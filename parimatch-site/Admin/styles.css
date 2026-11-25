@@ -11,7 +11,7 @@
   --text:#F2F4F8;
   --text2:#9499B0;
   --text3:#5C6278;
-  --accent:#00FF00;
+  --accent:#7CFC00;
   --accent-dark:#090a0f;
   --green:#34C759;
   --red:#FF453A;
@@ -563,13 +563,13 @@ html,body{
 .detail-table { width: 100%; border-collapse: collapse; background: #090a0f; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
 .detail-table tr { border-bottom: 1px solid var(--border); }
 .detail-table tr:last-child { border-bottom: none; }
-.detail-table th { width: 36%; text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text2); background: #131620; vertical-align: top; }
+.detail-table th { width: 36%; text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text2); background: #090a0f; vertical-align: top; }
 .detail-table td { padding: 10px 12px; font-size: 13px; color: var(--text); word-break: break-word; }
 .detail-td-wrap { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .field-copy { background: #131620; border: 1px solid var(--border); color: var(--text2); border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .field-copy:hover { color: var(--accent); border-color: var(--accent); }
 
-/* ===== 100% DARK MODE + GREEN (#00FF00) + MOBILE POLISH ===== */
+/* ===== 100% DARK MODE + GREEN (#7CFC00) + MOBILE POLISH ===== */
 .topbar, .bottomnav, .modal, .confirm-box, .sub-card, .kpi, .card, .site-card, .analytics-card {
   background: var(--card) !important;
   color: var(--text) !important;
@@ -581,7 +581,7 @@ html,body{
   border-color: var(--border) !important;
 }
 .pill.active, .nav-item.active, .btn-primary {
-  background: #00FF00 !important;
+  background: #7CFC00 !important;
   color: #090a0f !important;
   font-weight: 700 !important;
 }
@@ -606,9 +606,9 @@ html,body{
   border-color: rgba(255,255,255,0.08) !important;
 }
 .topbar-title, .bnav-btn, .nav-btn { color: #F2F4F8 !important; }
-.bnav-btn.active, .nav-btn.active { color: #00FF00 !important; background: transparent !important; }
+.bnav-btn.active, .nav-btn.active { color: #7CFC00 !important; background: transparent !important; }
 .spark-bar, .bar-fill, .install-btn, #installBtn, .pill.active, .tab.active {
-  background: #00FF00 !important;
+  background: #7CFC00 !important;
   color: #090a0f !important;
 }
 .js-view-auth-img {
@@ -618,3 +618,11 @@ html,body{
   font-size: 13px !important;
   border-radius: 8px !important;
 }
+
+/* ===== INBOX TABLE & VIEW BUTTON #FF8C00 ===== */
+.inbox-table { width: 100%; border-collapse: collapse; background: #090a0f; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 8px; }
+.inbox-table tr { border-bottom: 1px solid var(--border); }
+.inbox-table tr:last-child { border-bottom: none; }
+.inbox-table th { width: 34%; text-align: left; padding: 7px 10px; font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--text2); background: #090a0f; }
+.inbox-table td { padding: 7px 10px; font-size: 12px; color: var(--text); word-break: break-word; background: #090a0f; }
+.js-view-auth-img { background: #FF8C00 !important; color: #090a0f !important; font-weight: 700 !important; }
