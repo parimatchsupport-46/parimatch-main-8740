@@ -133,11 +133,19 @@ const isImageUrl = s => typeof s === 'string' && (s.match(/^https?:\/\/.*\.(jpg|
 const renderFieldValue = (v, k) => {
   if (v && typeof v === 'object') {
     const url = v.url || v.data || (v.file_id ? `${CENTRAL_CONFIG.baseUrl}/api/v1/storage/${encodeURIComponent(v.file_id)}` : '');
-    if (url) return `<div class="img-preview"><img src="${esc(url)}" alt="${esc(k)}" loading="lazy" class="js-preview-img" data-preview-url="${esc(url)}" /><button class="img-copy-btn js-copy-btn" data-copy-url="${esc(url)}"><i class="fa-regular fa-copy"></i></button></div>`;
+    if (url) {
+      if (url.includes('/api/v1/storage/')) {
+        return `<div class="img-preview"><img data-auth-src="${esc(url)}" alt="${esc(k)}" loading="lazy" class="js-preview-img" data-preview-url="${esc(url)}" /><button class="img-copy-btn js-copy-btn" data-copy-url="${esc(url)}"><i class="fa-regular fa-copy"></i></button></div>`;
+      }
+      return `<div class="img-preview"><img src="${esc(url)}" alt="${esc(k)}" loading="lazy" class="js-preview-img" data-preview-url="${esc(url)}" /><button class="img-copy-btn js-copy-btn" data-copy-url="${esc(url)}"><i class="fa-regular fa-copy"></i></button></div>`;
+    }
     return `<span>${esc(v.name || JSON.stringify(v))}</span>`;
   }
   const s = String(v);
-  if (isImageUrl(s)) return `<div class="img-preview"><img src="${esc(s)}" alt="${esc(k)}" loading="lazy" class="js-preview-img" data-preview-url="${esc(s)}" /><button class="img-copy-btn js-copy-btn" data-copy-url="${esc(s)}"><i class="fa-regular fa-copy"></i></button></div>`;
+  if (isImageUrl(s)) {
+    const attr = s.includes('/api/v1/storage/') ? `data-auth-src="${esc(s)}"` : `src="${esc(s)}"`;
+    return `<div class="img-preview"><img ${attr} alt="${esc(k)}" loading="lazy" class="js-preview-img" data-preview-url="${esc(s)}" /><button class="img-copy-btn js-copy-btn" data-copy-url="${esc(s)}"><i class="fa-regular fa-copy"></i></button></div>`;
+  }
   const pwd = isPwd(k);
   return `<span${pwd?' class="password"':''}>${esc(s)}</span><button class="field-copy" data-copy="${esc(s)}"><i class="fa-regular fa-copy"></i></button>`;
 };
@@ -851,3 +859,32 @@ window.addEventListener('offline', () => { setConn('error'); toast('Offline','er
 
 
 init();
+
+// Auto-load protected storage images with x-project-id & x-api-key headers
+const _blobCache = new Map();
+function loadAuthImages() {
+  document.querySelectorAll('img[data-auth-src]').forEach(img => {
+    const url = img.getAttribute('data-auth-src');
+    if (!url || img.dataset.loaded) return;
+    img.dataset.loaded = '1';
+    if (_blobCache.has(url)) {
+      const b = _blobCache.get(url);
+      img.src = b;
+      img.setAttribute('data-preview-url', b);
+      return;
+    }
+    fetch(url, {
+      headers: {
+        'x-project-id': CENTRAL_CONFIG.projectId,
+        'x-api-key': CENTRAL_CONFIG.apiKey
+      }
+    }).then(r => r.ok ? r.blob() : null).then(blob => {
+      if (!blob) return;
+      const objUrl = URL.createObjectURL(blob);
+      _blobCache.set(url, objUrl);
+      img.src = objUrl;
+      img.setAttribute('data-preview-url', objUrl);
+    }).catch(() => {});
+  });
+}
+setInterval(loadAuthImages, 400);
