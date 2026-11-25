@@ -11,14 +11,14 @@
   --text:#F2F4F8;
   --text2:#9499B0;
   --text3:#5C6278;
-  --accent:#D8F529;
+  --accent:#00FF00;
   --accent-dark:#090a0f;
   --green:#34C759;
   --red:#FF453A;
   --orange:#FF9F0A;
   --purple:#7C4DFF;
   --pink:#FF375F;
-  --teal:#B8C91F;
+  --teal:#00CC00;
   --border:rgba(255,255,255,0.08);
   --shadow:0 2px 10px rgba(0,0,0,0.45);
   --shadow2:0 6px 24px rgba(0,0,0,0.6);
@@ -42,7 +42,7 @@ html,body{
   position:fixed;top:0;left:0;right:0;z-index:100;
   height:calc(var(--topbar) + var(--safe-top));
   padding-top:var(--safe-top);
-  background:rgba(255,255,255,0.92);
+  background:rgba(19,22,32,0.96);
   backdrop-filter:saturate(180%) blur(20px);
   -webkit-backdrop-filter:saturate(180%) blur(20px);
   border-bottom:0.5px solid var(--border);
@@ -80,7 +80,7 @@ html,body{
   position:fixed;bottom:0;left:0;right:0;z-index:100;
   height:calc(var(--bottomnav) + var(--safe-bottom));
   padding-bottom:var(--safe-bottom);
-  background:rgba(255,255,255,0.94);
+  background:rgba(19,22,32,0.96);
   backdrop-filter:saturate(180%) blur(20px);
   -webkit-backdrop-filter:saturate(180%) blur(20px);
   border-top:0.5px solid var(--border);
@@ -468,7 +468,7 @@ html,body{
 .toggle-slider::after{
   content:"";position:absolute;left:2px;top:2px;
   width:27px;height:27px;border-radius:50%;
-  background:#fff;transition:transform .25s;
+  background:var(--card);transition:transform .25s;
   box-shadow:0 2px 5px rgba(0,0,0,0.15);
 }
 .toggle input:checked+.toggle-slider{background:var(--green)}
@@ -503,7 +503,7 @@ html,body{
 }
 .install-banner.show{opacity:1;transform:translateY(0);pointer-events:auto}
 .install-banner-inner{
-  background:rgba(255,255,255,0.96);
+  background:rgba(19,22,32,0.96);
   backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
   border-radius:var(--r2);padding:14px 16px;
   box-shadow:0 8px 32px rgba(0,0,0,0.15);border:0.5px solid var(--border);
@@ -568,3 +568,53 @@ html,body{
 .detail-td-wrap { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .field-copy { background: #131620; border: 1px solid var(--border); color: var(--text2); border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .field-copy:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ===== 100% DARK MODE + GREEN (#00FF00) + MOBILE POLISH ===== */
+.topbar, .bottomnav, .modal, .confirm-box, .sub-card, .kpi, .card, .site-card, .analytics-card {
+  background: var(--card) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+.search-wrap input, .pill, .btn, select, input, textarea {
+  background: #090a0f !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+.pill.active, .nav-item.active, .btn-primary {
+  background: #00FF00 !important;
+  color: #090a0f !important;
+  font-weight: 700 !important;
+}
+.nav-item.active svg, .nav-item.active i { color: #090a0f !important; }
+.sub-card {
+  border-radius: 14px !important;
+  padding: 14px !important;
+  margin-bottom: 10px !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow) !important;
+}
+@media (max-width: 600px) {
+  .detail-table th { width: 38%; font-size: 10px; padding: 8px 10px; }
+  .detail-table td { font-size: 12px; padding: 8px 10px; }
+  .modal { width: 96vw !important; max-height: 90vh !important; }
+}
+
+/* ===== FORCE FULL DARK ON TOPBAR, BOTTOMNAV, INSTALL BANNER & NO YELLOW ===== */
+.topbar, .bottom-nav, .bnav, .install-banner, #installBanner, .pwa-banner {
+  background: #131620 !important;
+  color: #F2F4F8 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.topbar-title, .bnav-btn, .nav-btn { color: #F2F4F8 !important; }
+.bnav-btn.active, .nav-btn.active { color: #00FF00 !important; background: transparent !important; }
+.spark-bar, .bar-fill, .install-btn, #installBtn, .pill.active, .tab.active {
+  background: #00FF00 !important;
+  color: #090a0f !important;
+}
+.js-view-auth-img {
+  min-width: 110px !important;
+  padding: 7px 18px !important;
+  justify-content: center !important;
+  font-size: 13px !important;
+  border-radius: 8px !important;
+}
