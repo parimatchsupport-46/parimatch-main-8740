@@ -7,6 +7,7 @@ import { getRecords, getFileUrl } from '../utils/centralBackend'
 export default function AllComplains() {
   const [complains, setComplains] = useState([])
   const [loading, setLoading] = useState(true)
+  const [previewImg, setPreviewImg] = useState(null)
 
   const load = async () => {
     try {
@@ -107,7 +108,7 @@ export default function AllComplains() {
                       <div key={key} className="complain-file">
                         <div className="complain-file-label">{key}</div>
                         {src ? (
-                          isImg ? <img src={src} alt={key} className="complain-file-thumb" /> : <a href={src} target="_blank" rel="noreferrer" download={f.name} className="complain-file-link">{f.name || key}</a>
+                          isImg ? <img src={src} alt={key} className="complain-file-thumb" style={{cursor:'pointer'}} onClick={() => setPreviewImg(src)} /> : <a href={src} target="_blank" rel="noreferrer" download={f.name} className="complain-file-link">{f.name || key}</a>
                         ) : (
                           <span className="complain-detail-value">{f.name || key}</span>
                         )}
@@ -127,6 +128,12 @@ export default function AllComplains() {
           ))
         )}
       </main>
+      {previewImg && (
+        <div onClick={() => setPreviewImg(null)} style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.88)',zIndex:9999,display:'flex',alignItems:'center',justifyContent:'center',padding:16}}>
+          <button onClick={() => setPreviewImg(null)} style={{position:'fixed',top:16,right:16,background:'#fff',color:'#000',border:'none',borderRadius:'50%',width:36,height:36,fontSize:20,fontWeight:700,cursor:'pointer'}}>×</button>
+          <img src={previewImg} alt="Preview" onClick={e => e.stopPropagation()} style={{maxWidth:'95vw',maxHeight:'90vh',borderRadius:10,objectFit:'contain'}} />
+        </div>
+      )}
             <footer>        <div className="footer-main">
           <p>&copy; 2026 Parimatch Support. All rights reserved.</p>
           <nav className="footer-nav">
