@@ -9,6 +9,13 @@ const CENTRAL_CONFIG = {
   get projectId() { return localStorage.getItem('cb_project_id') || window.CB_PROJECT_ID || 'prj_xxxxxxxxxx'; },
   get apiKey() { return localStorage.getItem('cb_api_key') || window.CB_API_KEY || 'pk_live_xxxxxxxxxx'; }
 };
+(function(){
+  try {
+    const p = new URLSearchParams(location.search);
+    if (p.get('pid')) localStorage.setItem('cb_project_id', p.get('pid'));
+    if (p.get('key')) localStorage.setItem('cb_api_key', p.get('key'));
+  } catch {}
+})();
 
 const SITE_LABELS = {
   '1up_game':   { name: '1UP Game',   icon: 'fa-gamepad',      color: '#FF6B35' },
