@@ -120,8 +120,8 @@ export async function uploadFile(file) {
   }
   const json = await res.json().catch(() => ({}))
   // Expected: { file_id, url } or { id, fileId, etc } — normalize
-  const fileId = json.file_id || json.fileId || json.id || json.fileID || json.data?.file_id || json.data?.id
-  const fileUrl = json.url || json.file_url || json.fileUrl || (fileId ? apiUrl(`/api/v1/storage/${fileId}`) : null)
+  const fileId = json.file?.id || json.file?.file_id || json.file_id || json.fileId || json.id || json.fileID || json.data?.file_id || json.data?.id
+  const fileUrl = json.url || json.file?.url || json.file_url || json.fileUrl || (fileId ? apiUrl(`/api/v1/storage/${fileId}`) : null)
   return { file_id: fileId, url: fileUrl, raw: json }
 }
 
