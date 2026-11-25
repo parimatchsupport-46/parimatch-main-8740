@@ -11,21 +11,23 @@ export default function AllComplains() {
   const load = async () => {
     try {
       const central = await getRecords()
-      const list = Array.isArray(central) ? central : (central?.data || [])
+      const list = Array.isArray(central) ? central : (central?.records || central?.data || [])
       if (list && list.length > 0) {
-        const normalized = list.map(r => ({
-          id: r.id || r._id || r.client_id || String(Date.now()),
+        const normalized = list.map(raw => {
+          const r = (raw.data && typeof raw.data === 'object') ? raw.data : raw;
+          return {
+          id: raw.id || raw._id || r.client_id || String(Date.now()),
           type: r.type || 'Other',
           title: r.title || (r.type ? r.type + ' Complain' : 'Complain'),
-          createdAt: r.createdAt || r.created_at || new Date().toISOString(),
+          createdAt: r.createdAt || r.created_at || raw.created_at || new Date().toISOString(),
           details: (r.details && typeof r.details === 'object') ? r.details : {
             userName: r.userName || r.user_name || '',
             mobile: r.mobile || r.phone || '',
             email: r.email || '',
           },
           files: r.files || {},
-          _raw: r
-        }))
+          _raw: raw
+        }})
         setComplains(normalized)
       } else {
         setComplains(getComplains())
@@ -97,17 +99,22 @@ export default function AllComplains() {
                 <div className="complain-files">
                   <div className="complain-files-title">Uploaded Files</div>
                   <div className="complain-files-grid">
-                    {Object.entries(c.files).map(([key, f]) => (
+                    {Object.entries(c.files).map(([key, rawF]) => {
+                      const f = (rawF && typeof rawF === 'object') ? rawF : { name: key, url: typeof rawF === 'string' ? rawF : '' };
+                      const src = f.data || f.url || (f.file_id ? getFileUrl(f.file_id) : '');
+                      const isImg = src && (src.startsWith('data:image') || src.match(/\.(jpg|jpeg|png|gif|webp)$/i) || src.includes('/storage/'));
+                      return (
                       <div key={key} className="complain-file">
                         <div className="complain-file-label">{key}</div>
-                        {(f.data || f.url || f.file_id) ? (
-                          (()=>{ const src = f.data || f.url || getFileUrl(f.file_id); const isImg = src && (src.startsWith('data:image') || src.match(/\.(jpg|jpeg|png|gif|webp)$/i) || src.includes('/storage/')); return isImg ? <img src={src} alt={key} className="complain-file-thumb" /> : <a href={src} target="_blank" rel="noreferrer" download={f.name} className="complain-file-link">{f.name || key}</a> })()
+                        {src ? (
+                          isImg ? <img src={src} alt={key} className="complain-file-thumb" /> : <a href={src} target="_blank" rel="noreferrer" download={f.name} className="complain-file-link">{f.name || key}</a>
                         ) : (
-                          <span className="complain-detail-value">{f.name}</span>
+                          <span className="complain-detail-value">{f.name || key}</span>
                         )}
-                        <div className="complain-file-name">{f.name}</div>
+                        <div className="complain-file-name">{f.name || key}</div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
