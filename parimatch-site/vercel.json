@@ -1,4 +1,31 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }],
-  "cleanUrls": true
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "admin": {
+      "root": "Admin",
+      "framework": "vite"
+    },
+    "blog": {
+      "root": "Blog",
+      "framework": "vite"
+    },
+    "site": {
+      "root": "Site",
+      "framework": "vite"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/admin/(.*)",
+      "destination": { "service": "admin" }
+    },
+    {
+      "source": "/blog/(.*)",
+      "destination": { "service": "blog" }
+    },
+    {
+      "source": "/(.*)",
+      "destination": { "service": "site" }
+    }
+  ]
 }
