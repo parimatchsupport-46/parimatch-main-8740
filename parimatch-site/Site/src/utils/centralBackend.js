@@ -9,7 +9,7 @@
  */
 
 // Vite env (set in .env, fallback to placeholder for build without crash)
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://45.195.159.105').replace(/\/$/, '')
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'https://server-vakki-8740.duckdns.org').replace(/\/$/, '')
 const PROJECT_ID = import.meta.env.VITE_PROJECT_ID || 'prj_xxxxxxxxxx'
 const API_KEY = import.meta.env.VITE_API_KEY || 'pk_live_xxxxxxxxxx'
 const COLLECTION = import.meta.env.VITE_COLLECTION_SUBMISSIONS || 'submissions'
