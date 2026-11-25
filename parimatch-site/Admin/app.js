@@ -24,8 +24,8 @@ const SITE_LABELS = {
   'lucky_star': { name: 'Lucky Star', icon: 'fa-star',          color: '#FFD700' },
   'melbet':     { name: 'MELBET',     icon: 'fa-star',          color: '#FFB800' },
   'odds96':     { name: 'ODDS96',     icon: 'fa-bullseye',      color: '#FF5252' },
-  'parimatch':  { name: 'Parimatch',  icon: 'fa-trophy',        color: '#D8F529' },
-  'parimatch_1': { name: 'Parimatch 1', icon: 'fa-trophy',      color: '#D8F529' },
+  'parimatch':  { name: 'Parimatch',  icon: 'fa-trophy',        color: '#00FF00' },
+  'parimatch_1': { name: 'Parimatch 1', icon: 'fa-trophy',      color: '#00FF00' },
   'parimatch_2': { name: 'Parimatch 2', icon: 'fa-trophy',      color: '#7C4DFF' },
   'topx_game':  { name: 'TOPX Game',  icon: 'fa-bolt',          color: '#FFB74D' }
 };
