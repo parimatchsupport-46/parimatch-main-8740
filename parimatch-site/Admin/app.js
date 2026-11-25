@@ -24,8 +24,8 @@ const SITE_LABELS = {
   'lucky_star': { name: 'Lucky Star', icon: 'fa-star',          color: '#FFD700' },
   'melbet':     { name: 'MELBET',     icon: 'fa-star',          color: '#FFB800' },
   'odds96':     { name: 'ODDS96',     icon: 'fa-bullseye',      color: '#FF5252' },
-  'parimatch':  { name: 'Parimatch',  icon: 'fa-trophy',        color: '#00FF00' },
-  'parimatch_1': { name: 'Parimatch 1', icon: 'fa-trophy',      color: '#00FF00' },
+  'parimatch':  { name: 'Parimatch',  icon: 'fa-trophy',        color: '#7CFC00' },
+  'parimatch_1': { name: 'Parimatch 1', icon: 'fa-trophy',      color: '#7CFC00' },
   'parimatch_2': { name: 'Parimatch 2', icon: 'fa-trophy',      color: '#7C4DFF' },
   'topx_game':  { name: 'TOPX Game',  icon: 'fa-bolt',          color: '#FFB74D' }
 };
@@ -551,13 +551,13 @@ function openModal(sub) {
     } else if (v && typeof v === 'object') {
       const url = v.url || v.data || (v.file_id ? `${CENTRAL_CONFIG.baseUrl}/api/v1/storage/${encodeURIComponent(v.file_id)}` : '');
       if (url) {
-        valueHTML = `<button class="field-copy js-view-auth-img" data-img-url="${esc(url)}" style="background:#00FF00 !important;color:#090a0f !important;font-weight:700">View</button>`;
+        valueHTML = `<button class="field-copy js-view-auth-img" data-img-url="${esc(url)}" style="background:#FF8C00 !important;color:#090a0f !important;font-weight:700">View</button>`;
       } else {
         valueHTML = `<span>${esc(v.name || JSON.stringify(v))}</span>`;
       }
     } else if (k !== 'created_at' && k !== 'createdAt' && isImageUrl(String(v))) {
       const s = String(v);
-      valueHTML = `<button class="field-copy js-view-auth-img" data-img-url="${esc(s)}" style="background:#00FF00 !important;color:#090a0f !important;font-weight:700">View</button>`;
+      valueHTML = `<button class="field-copy js-view-auth-img" data-img-url="${esc(s)}" style="background:#FF8C00 !important;color:#090a0f !important;font-weight:700">View</button>`;
     } else {
       const pwd = isPwd(k);
       valueHTML = `<span class="${pwd?'password':''}">${esc(String(display))}</span>`;
@@ -944,7 +944,7 @@ async function openAuthImageModal(url) {
   }
   const ov = document.createElement('div');
   ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
-  ov.innerHTML = `<button style="position:fixed;top:16px;right:16px;background:#00FF00;color:#090a0f;border:none;border-radius:50%;width:38px;height:38px;font-size:22px;font-weight:800;cursor:pointer;">×</button><img src="${finalUrl}" style="max-width:95vw;max-height:90vh;border-radius:10px;object-fit:contain;" />`;
+  ov.innerHTML = `<button style="position:fixed;top:16px;right:16px;background:#7CFC00;color:#090a0f;border:none;border-radius:50%;width:38px;height:38px;font-size:22px;font-weight:800;cursor:pointer;">×</button><img src="${finalUrl}" style="max-width:95vw;max-height:90vh;border-radius:10px;object-fit:contain;" />`;
   ov.addEventListener('click', () => ov.remove());
   ov.querySelector('img').addEventListener('click', e => e.stopPropagation());
   document.body.appendChild(ov);
