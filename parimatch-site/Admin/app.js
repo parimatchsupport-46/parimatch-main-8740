@@ -129,8 +129,13 @@ function cacheDom() {
 }
 
 const esc = s => s == null ? '' : String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const isImageUrl = s => typeof s === 'string' && (s.match(/^https?:\/\/.*\.(jpg|jpeg|png|gif|webp)/i) || s.match(/^https:\/\/i\.ibb\.co\//));
+const isImageUrl = s => typeof s === 'string' && (s.match(/^https?:\/\/.*\.(jpg|jpeg|png|gif|webp)/i) || s.match(/^https:\/\/i\.ibb\.co\//) || s.includes('/api/v1/storage/') || s.startsWith('data:image/'));
 const renderFieldValue = (v, k) => {
+  if (v && typeof v === 'object') {
+    const url = v.url || v.data || (v.file_id ? `${CENTRAL_CONFIG.baseUrl}/api/v1/storage/${encodeURIComponent(v.file_id)}` : '');
+    if (url) return `<div class="img-preview"><img src="${esc(url)}" alt="${esc(k)}" loading="lazy" class="js-preview-img" data-preview-url="${esc(url)}" /><button class="img-copy-btn js-copy-btn" data-copy-url="${esc(url)}"><i class="fa-regular fa-copy"></i></button></div>`;
+    return `<span>${esc(v.name || JSON.stringify(v))}</span>`;
+  }
   const s = String(v);
   if (isImageUrl(s)) return `<div class="img-preview"><img src="${esc(s)}" alt="${esc(k)}" loading="lazy" class="js-preview-img" data-preview-url="${esc(s)}" /><button class="img-copy-btn js-copy-btn" data-copy-url="${esc(s)}"><i class="fa-regular fa-copy"></i></button></div>`;
   const pwd = isPwd(k);
