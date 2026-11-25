@@ -6,8 +6,8 @@
 const CENTRAL_CONFIG = {
   baseUrl: 'https://server-vakki-8740.duckdns.org',
   collection: 'submissions',
-  get projectId() { return localStorage.getItem('cb_project_id') || window.CB_PROJECT_ID || 'prj_xxxxxxxxxx'; },
-  get apiKey() { return localStorage.getItem('cb_api_key') || window.CB_API_KEY || 'pk_live_xxxxxxxxxx'; }
+  get projectId() { return localStorage.getItem('cb_project_id') || window.CB_PROJECT_ID || 'prj_b184e6323c'; },
+  get apiKey() { return localStorage.getItem('cb_api_key') || window.CB_API_KEY || 'pk_live_5247804425cce0596e2beaacafe006ed'; }
 };
 (function(){
   try {
