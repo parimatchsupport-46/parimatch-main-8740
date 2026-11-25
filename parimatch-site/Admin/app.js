@@ -720,16 +720,16 @@ function initUnblockPaymentUI() {
     saveQrUrlBtn.addEventListener('click', function() {
       var val = qrUrlInput ? qrUrlInput.value.trim() : '';
       if (!val) { toast('Enter QR image URL', 'error'); return; }
-      /* saved locally */
-      });
+      localStorage.setItem('payment_qr_url', val);
+      toast('QR URL saved locally');
     });
   }
 
   if (removeQrBtn) {
     removeQrBtn.addEventListener('click', function() {
-      /* saved locally */
-        if (qrUrlInput) qrUrlInput.value = '';
-      });
+      localStorage.removeItem('payment_qr_url');
+      if (qrUrlInput) qrUrlInput.value = '';
+      toast('QR removed');
     });
   }
 
@@ -737,16 +737,16 @@ function initUnblockPaymentUI() {
     saveUpiBtn.addEventListener('click', function() {
       var val = upiInput ? upiInput.value.trim() : '';
       if (!val) { toast('Enter UPI ID', 'error'); return; }
-      /* saved locally */
-      });
+      localStorage.setItem('payment_upi_id', val);
+      toast('UPI ID saved locally');
     });
   }
 
   if (removeUpiBtn) {
     removeUpiBtn.addEventListener('click', function() {
-      /* saved locally */
-        if (upiInput) upiInput.value = '';
-      });
+      localStorage.removeItem('payment_upi_id');
+      if (upiInput) upiInput.value = '';
+      toast('UPI removed');
     });
   }
 
@@ -756,6 +756,7 @@ function initUnblockPaymentUI() {
 function listenPaymentSettings() {
   if (_unsubPayment) { _unsubPayment(); _unsubPayment = null; }
   /* payment listener disabled */
+}
 
 function updatePaymentUI() {
   var qrPreview = document.getElementById('qrPreview');
