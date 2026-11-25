@@ -958,3 +958,26 @@ async function openAuthImageModal(url) {
   ov.querySelector('img').addEventListener('click', e => e.stopPropagation());
   document.body.appendChild(ov);
 }
+
+// iOS Dual Theme (Dark / Light)
+(function initTheme() {
+  const saved = localStorage.getItem('admin_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  const topbar = document.querySelector('.topbar-right') || document.querySelector('.topbar');
+  if (topbar && !document.getElementById('themeToggleBtn')) {
+    const btn = document.createElement('button');
+    btn.id = 'themeToggleBtn';
+    btn.className = 'icon-btn';
+    btn.title = 'Toggle Dark / Light Mode';
+    btn.style.cssText = 'background:transparent;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:5px 9px;font-size:13px;cursor:pointer;margin-right:6px;';
+    btn.textContent = saved === 'dark' ? '☀️' : '🌙';
+    btn.addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('admin_theme', next);
+      btn.textContent = next === 'dark' ? '☀️' : '🌙';
+    });
+    topbar.prepend(btn);
+  }
+})();
