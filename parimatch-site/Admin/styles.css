@@ -14,7 +14,7 @@
   --text3:#5C6278;
   --accent:#0A84FF;
   --accent-dark:#FFFFFF;
-  --green:#30D158;
+  --green:#0A84FF;
   --red:#FF453A;
   --orange:#FF9F0A;
   --purple:#5E5CE6;
@@ -39,7 +39,7 @@
   --text3:#AEAEB2;
   --accent:#007AFF;
   --accent-dark:#FFFFFF;
-  --green:#34C759;
+  --green:#0A84FF;
   --red:#FF3B30;
   --orange:#FF9500;
   --purple:#5856D6;
@@ -194,7 +194,7 @@ html,body{
 .mix-chip.bonus{background:rgba(255,204,0,0.15);color:#CC9900}
 .mix-chip.chat{background:rgba(64,156,255,0.15);color:#1e6fd9}
 .mix-chip.kyc{background:rgba(255,149,0,0.15);color:#FF9500}
-.mix-chip.bank_statement{background:rgba(52,199,89,0.15);color:#34C759}
+.mix-chip.bank_statement{background:rgba(52,199,89,0.15);color:#0A84FF}
 .mix-chip.other{background:rgba(142,142,147,0.15);color:#636366}
 
 /* ===== RECENT ===== */
@@ -304,7 +304,7 @@ html,body{
 .badge-type-bonus{background:rgba(255,204,0,0.1);color:#CC9900}
 .badge-type-chat{background:rgba(64,156,255,0.1);color:#1e6fd9}
 .badge-type-kyc{background:rgba(255,149,0,0.1);color:#FF9500}
-.badge-type-bank_statement{background:rgba(52,199,89,0.1);color:#34C759}
+.badge-type-bank_statement{background:rgba(52,199,89,0.1);color:#0A84FF}
 .badge-type-other{background:rgba(142,142,147,0.1);color:#636366}
 .card-time{font-size:11px;color:var(--text3);margin-left:auto}
 .card-fields{display:flex;flex-direction:column;gap:4px}
@@ -586,7 +586,7 @@ html,body{
 .detail-table th { width: 36%; text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text2); background: #090a0f; vertical-align: top; }
 .detail-table td { padding: 10px 12px; font-size: 13px; color: var(--text); word-break: break-word; }
 .detail-td-wrap { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.field-copy { background: #131620; border: 1px solid var(--border); color: var(--text2); border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.field-copy { background: var(--card); border: 1px solid var(--border); color: var(--text2); border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .field-copy:hover { color: var(--accent); border-color: var(--accent); }
 
 
