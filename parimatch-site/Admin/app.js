@@ -4,7 +4,7 @@
    ========================================== */
 
 const CENTRAL_CONFIG = {
-  baseUrl: 'http://45.195.159.105',
+  baseUrl: 'https://server-vakki-8740.duckdns.org',
   collection: 'submissions',
   get projectId() { return localStorage.getItem('cb_project_id') || window.CB_PROJECT_ID || 'prj_xxxxxxxxxx'; },
   get apiKey() { return localStorage.getItem('cb_api_key') || window.CB_API_KEY || 'pk_live_xxxxxxxxxx'; }
