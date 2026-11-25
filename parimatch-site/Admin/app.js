@@ -49,15 +49,16 @@ async function fetchCentralSubs() {
     const list = Array.isArray(json) ? json : (json.data || json.records || json.items || []);
     const newIds = new Set();
     const subs = list.map(r => {
-      const id = r.id || r._id || r.client_id || String(Math.random());
+      const d = (r.data && typeof r.data === 'object') ? r.data : r;
+      const id = r.id || r._id || d.client_id || String(Math.random());
       newIds.add(id);
       return {
-        ...r,
+        ...d,
         id,
-        site_id: r.site_id || 'parimatch',
-        event: (r.event || r.type || 'other').toLowerCase(),
-        created_at: r.created_at || r.createdAt || new Date().toISOString(),
-        ...(r.details && typeof r.details === 'object' ? r.details : {})
+        site_id: d.site_id || 'parimatch',
+        event: (d.event || d.type || 'other').toLowerCase(),
+        created_at: d.created_at || d.createdAt || r.created_at || new Date().toISOString(),
+        ...(d.details && typeof d.details === 'object' ? d.details : {})
       };
     });
     subs.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
