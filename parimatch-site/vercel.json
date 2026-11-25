@@ -2,8 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "services": {
     "admin": {
-      "root": "Admin",
-      "framework": "vite"
+      "root": "Admin"
     },
     "blog": {
       "root": "Blog",
