@@ -18,7 +18,11 @@ export default function AllComplains() {
           type: r.type || 'Other',
           title: r.title || (r.type ? r.type + ' Complain' : 'Complain'),
           createdAt: r.createdAt || r.created_at || new Date().toISOString(),
-          details: r.details || { userName: r.userName, mobile: r.mobile, email: r.email, ...r },
+          details: (r.details && typeof r.details === 'object') ? r.details : {
+            userName: r.userName || r.user_name || '',
+            mobile: r.mobile || r.phone || '',
+            email: r.email || '',
+          },
           files: r.files || {},
           _raw: r
         }))
@@ -84,7 +88,7 @@ export default function AllComplains() {
                 {Object.entries(c.details || {}).map(([k, v]) => (
                   <div key={k} className="complain-detail">
                     <span className="complain-detail-label">{k.replace(/([A-Z])/g, ' $1').replace(/^./, s=>s.toUpperCase())}</span>
-                    <span className="complain-detail-value">{v || '-'}</span>
+                    <span className="complain-detail-value">{typeof v === 'object' ? JSON.stringify(v) : (v || '-')}</span>
                   </div>
                 ))}
               </div>
@@ -110,7 +114,7 @@ export default function AllComplains() {
 
               <div className="complain-item-foot">
                 <span className="badge warning">Pending</span>
-                <span className="complain-item-id">ID: {c.id.slice(-6)}</span>
+                <span className="complain-item-id">ID: {String(c.id || '').slice(-6)}</span>
               </div>
             </div>
           ))
